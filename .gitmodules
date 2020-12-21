@@ -1,0 +1,4 @@
+[submodule "AF-RSSP/Odoo12"]
+	path = AF-RSSP/Odoo12
+	url = git@github.com:AF-RSSP/Odoo12.git
+	branch = test_import
