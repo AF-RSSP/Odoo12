@@ -6,7 +6,8 @@
         BOM Cost and Structure unit cost on sale order line for product cost""",
 
     'description': """
-        BOM Cost and Structure unit cost on sale order line for product cost
+        Fetch the bom cost on the sale oder line cost field and added the
+        formula for the sales margin
     """,
 
     'author': "Bista Solutions PVT LTD",
