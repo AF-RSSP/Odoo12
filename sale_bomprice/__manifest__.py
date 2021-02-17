@@ -19,6 +19,7 @@
 
     # always loaded
     'data': [
+        'views/sale_order_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
