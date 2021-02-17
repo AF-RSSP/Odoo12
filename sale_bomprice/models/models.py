@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.addons import decimal_precision as dp
 
 
 class SaleOrderLine(models.Model):
@@ -25,39 +26,48 @@ class SaleOrderLine(models.Model):
                     searchVariant=False)
                 self.purchase_price = res['lines']['total'] / res['lines'][
                     'bom_qty']
+                self.price_unit = self.purchase_price / 0.40
 
     @api.depends('product_id', 'purchase_price', 'product_uom_qty',
                  'price_unit', 'price_subtotal')
     def _product_margin(self):
-        if not self.env.in_onchange:
-            # prefetch the fields needed for the computation
-            self.read(['price_subtotal', 'purchase_price', 'product_uom_qty',
-                       'order_id'])
+        super(SaleOrderLine, self)._product_margin()
         for line in self:
-            currency = line.order_id.pricelist_id.currency_id
-            price = line.purchase_price
-            if line.price_subtotal:
-                profit = currency.round(
-                    line.price_subtotal - (price * line.product_uom_qty))
-                sale_margin = line.price_unit * line.product_uom_qty
-                line.margin = profit / sale_margin
+            if line.product_id:
+                bom = self.env['mrp.bom']._bom_find(product=line.product_id)
+                if bom:
+                    res = self.env[
+                        'report.mrp.report_bom_structure']._get_report_data(
+                        bom_id=bom.id, searchQty=line.product_uom_qty,
+                        searchVariant=False)
+                    line.purchase_price = res['lines']['total'] / res['lines'][
+                        'bom_qty']
+                    line.price_unit = line.purchase_price / 0.40
+
+    @api.onchange('product_uom', 'product_uom_qty')
+    def product_uom_change(self):
+        super(SaleOrderLine, self).product_uom_change()
+        bom = self.env['mrp.bom']._bom_find(product=self.product_id)
+        if bom:
+            res = self.env[
+                'report.mrp.report_bom_structure']._get_report_data(
+                bom_id=bom.id, searchQty=self.product_uom_qty,
+                searchVariant=False)
+            self.purchase_price = res['lines']['total'] / res['lines'][
+                'bom_qty']
+            self.price_unit = self.purchase_price / 0.40
 
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    @api.depends('order_line.margin')
-    def _product_margin(self):
-        # if self.env.in_onchange:
+    margin_per = fields.Float(compute='_product_margin_per', string="Margin %",
+                              digits=dp.get_precision('Product Price'))
+
+
+    @api.depends('amount_total','margin')
+    def _product_margin_per(self):
         for order in self:
-            margin_sum = sum(order.order_line.filtered(
-                lambda r: r.state != 'cancel').mapped('margin'))
-            total_margin = 0
-            amount_order = 0
-            for line in order.order_line:
-                total_margin += order.pricelist_id.currency_id.round(
-                    line.price_subtotal - (
-                                line.purchase_price * line.product_uom_qty))
-                amount_order += line.price_unit * line.product_uom_qty
-            if margin_sum:
-                order.margin = total_margin / amount_order
+            if order:
+                if order.margin and order.amount_total:
+                    order.margin_per = order.margin / order.amount_total
