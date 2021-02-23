@@ -38,7 +38,7 @@ class SaleOrderPricelistWizard(models.Model):
                                                                                        'sh_margin_per':margin_per,
                                                                                        'line_id': so_line,})
                          
-                    pricelist_list.append(wz_line_id.id)
+                        pricelist_list.append(wz_line_id.id)
             res.update({
                 
                 'pricelist_line':[(6,0,pricelist_list)],
