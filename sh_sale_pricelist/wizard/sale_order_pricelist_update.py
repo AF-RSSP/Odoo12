@@ -27,16 +27,17 @@ class SaleOrderPricelistWizard(models.Model):
                 for pricelist in pricelists:
                     price_unit =pricelist._compute_price_rule([(so_line_obj.product_id, so_line_obj.product_uom_qty, so_line_obj.order_id.partner_id)], date=date.today(), uom_id=so_line_obj.product_uom.id)[so_line_obj.product_id.id][0]
                     margin = price_unit - so_line_obj.product_id.standard_price
-                    margin_per = (100 * (price_unit - so_line_obj.product_id.standard_price))/price_unit
+                    if price_unit != 0.0:
+                        margin_per = (100 * (price_unit - so_line_obj.product_id.standard_price))/price_unit
+                             
+                        wz_line_id = self.env['sale.order.pricelist.wizard.line'].create({'sh_pricelist_id' :pricelist.id,
+                                                                                       'sh_unit_price':price_unit,
+                                                                                       'sh_unit_measure':so_line_obj.product_uom.id,
+                                                                                       'sh_unit_cost':so_line_obj.product_id.standard_price,
+                                                                                       'sh_margin':margin,
+                                                                                       'sh_margin_per':margin_per,
+                                                                                       'line_id': so_line,})
                          
-                    wz_line_id = self.env['sale.order.pricelist.wizard.line'].create({'sh_pricelist_id' :pricelist.id,
-                                                                                   'sh_unit_price':price_unit,
-                                                                                   'sh_unit_measure':so_line_obj.product_uom.id,
-                                                                                   'sh_unit_cost':so_line_obj.product_id.standard_price,
-                                                                                   'sh_margin':margin,
-                                                                                   'sh_margin_per':margin_per,
-                                                                                   'line_id': so_line,})
-                     
                     pricelist_list.append(wz_line_id.id)
             res.update({
                 
