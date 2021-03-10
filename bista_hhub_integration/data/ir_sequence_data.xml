@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Sequences for hhub.config -->
+        <record id="seq_hhub_config" model="ir.sequence">
+            <field name="name">HHub Config</field>
+            <field name="code">hhub.config</field>
+            <field name="prefix">HCON</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

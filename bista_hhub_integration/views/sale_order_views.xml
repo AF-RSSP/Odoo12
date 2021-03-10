@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="view_order_form_inherit_sale_hhub" model="ir.ui.view">
+            <field name="name">sale.order.form.sale.hhub</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="is_hhub_order" readonly="1" force_save="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="sale_order_search_inherit_hhub" model="ir.ui.view">
+            <field name="name">sale.order.search.hhub</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='filter_order_date']" position="after">
+                    <separator/>
+                    <filter string="HHub Order" name="is_hhub_order" domain="[('is_hhub_order','=', True)]"/>
+                    <separator/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="sale_order_view_search_inherit_hhub" model="ir.ui.view">
+            <field name="name">sale.order.search.inherit.hhub</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='order_date']" position="after">
+                    <separator/>
+                    <filter string="HHub Order" name="is_hhub_order" domain="[('is_hhub_order','=', True)]"/>
+                    <separator/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

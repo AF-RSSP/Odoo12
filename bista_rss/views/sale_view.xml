@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<odoo>
+  <record id="view_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="rss_state"/>
+            </xpath>
+        </field>
+  </record>
+  <record id="view_sales_order_filter_bista_rss" model="ir.ui.view">
+        <field name="name">view.sales.order.filter.bista.rss</field>
+        <field name="model">sale.order</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="customer_category_id"/>
+            </xpath>
+        </field>
+  </record>
+</odoo>
