@@ -282,7 +282,8 @@ class ImportOrder(models.TransientModel):
                                 price_subtotal = sol_product_qty * sol_price
                                 if so_id in so_line_data:
                                     so_line_data[so_id]['amount_total'] += price_subtotal
-                                    so_line_data[so_id]['line_items'].extend([(current_time,current_time,user_id,user_id,so_id,sol_product_description_name,product_id[0],1,sol_product_qty, sol_price,price_subtotal,sol_discount or 0.0,1,'draft')])
+                                    uom_id = product_obj.sudo().browse(product_id[0]).uom_id
+                                    so_line_data[so_id]['line_items'].extend([(current_time,current_time,user_id,user_id,so_id,sol_product_description_name,product_id[0],uom_id.id,sol_product_qty, sol_price,price_subtotal,sol_discount or 0.0,1,'draft')])
                             elif not so_id:
                                 not_imported_order += 'Row ' + str(
                                     count + 1) + 'SO %s is not imported because SO is not ' \
